@@ -1,0 +1,24 @@
+{
+  "name": "everything-lions",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Archer261/everything-lions.git"
+  },
+  "author": "KJ Archer",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Archer261/everything-lions/issues"
+  },
+  "homepage": "https://github.com/Archer261/everything-lions#readme",
+  "dependencies": {
+    "axios": "^0.27.2",
+    "cheerio": "^1.0.0-rc.12",
+    "express": "^4.18.1"
+  }
+}
