@@ -68,29 +68,16 @@ sources.forEach(s => {
                 const title = $(this).text();
                 const url = $(this).attr('href');
 
+                articles.push({
+                    title,
+                    url: s.link + url,
+                    source: s.name
+                })
 
-                if (url.startsWith('/')) {
-
-                    articles.push({
-                        title,
-                        url: s.link + url,
-                        source: s.name
-
-                    })
-                } else {
-                    articles.push({
-                        title,
-                        url: url,
-                        source: s.name
-
-                    })
-
-                }
             })
-
         })
-})
 
+})
 
 app.get('/', function (req, res) {
     res.send("All about the Lions")
@@ -102,7 +89,7 @@ app.get('/news', (req, res) => {
     res.json(articles);
 })
 
-app.get('/news/:sourceId', async (req, res) => {
+app.get('/news/:sourceId', (req, res) => {
     const sourceId = req.params.sourceId
 
     const sorAddress = sources.filter(sor => sor.name == sourceId)[0].address
@@ -120,23 +107,14 @@ app.get('/news/:sourceId', async (req, res) => {
                 const title = $(this).text();
                 const url = $(this).attr('href');
 
-                if (url.startsWith('/')) {
-                    specificSources.push({
-                        title,
-                        url: sorlink + url,
-                        source: sourceId
-                    })
-                } else {
-                    specificSources.push({
-                        title,
-                        url: url,
-                        source: sourceId
-                    }
-                    )
-                }
-                res.json(specificSources)
-            }).catch(err => console.log(err))
-        })
+                specificSources.push({
+                    title,
+                    url: sorlink + url,
+                    source: sourceId
+                })
+            })
+            res.json(specificSources)
+        }).catch(err => console.log(err))
 })
 
 app.listen(PORT, () => console.log(`server running on PORT ${PORT}`));
