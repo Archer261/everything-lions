@@ -18,19 +18,19 @@ const sources = [
     {
         name: "detroitfreepress",
         address: "https://www.freep.com/sports/lions",
-        filter: 'a[href*=story]',
+        filter: 'a[href*=/story/]',
         link: 'https://www.freep.com/sports/lions'
     },
     {
-        name: "detroitfreepress",
-        address: "https://www.freep.com/sports/lions",
-        filter: 'a[href*=story]',
+        name: "sportsillustrated",
+        address: "https://www.si.com/nfl/team/detroit-lions",
+        filter: 'phoenix-super-link',
         link: ''
     },
     {
         name: "espn",
         address: "https://www.espn.com/nfl/team/_/name/det/detroit-lions",
-        filter: 'a[href*=story]',
+        filter: 'a[href*=/story/]',
         link: "https://www.espn.com"
     },
     {
@@ -42,6 +42,20 @@ const sources = [
 ];
 const articles = []
 
+function sourceFilters() {
+    let filters = []
+    sources.forEach(s => {
+        if (s.filter) {
+            filters.push(s.filter)
+        }
+    })
+    filters = filters.join(", ")
+    return filters;
+}
+
+
+//console.log(filters());
+
 sources.forEach(s => {
 
     axios.get(s.address)
@@ -49,21 +63,34 @@ sources.forEach(s => {
             const html = response.data
             const $ = cheerio.load(html)
 
-            $('a[href*=article],[href*=story]', html).each(function () {
+            $(`${sourceFilters()}`, html).each(function () {
 
                 const title = $(this).text();
                 const url = $(this).attr('href');
 
-                articles.push({
-                    title,
-                    url: s.link + url,
-                    source: s.name
-                })
 
+                if (url.startsWith('/')) {
+
+                    articles.push({
+                        title,
+                        url: s.link + url,
+                        source: s.name
+
+                    })
+                } else {
+                    articles.push({
+                        title,
+                        url: url,
+                        source: s.name
+
+                    })
+
+                }
             })
-        })
 
+        })
 })
+
 
 app.get('/', function (req, res) {
     res.send("All about the Lions")
@@ -93,14 +120,23 @@ app.get('/news/:sourceId', async (req, res) => {
                 const title = $(this).text();
                 const url = $(this).attr('href');
 
-                specificSources.push({
-                    title,
-                    url: sorlink + url,
-                    source: sourceId
-                })
-            })
-            res.json(specificSources)
-        }).catch(err => console.log(err))
+                if (url.startsWith('/')) {
+                    specificSources.push({
+                        title,
+                        url: sorlink + url,
+                        source: sourceId
+                    })
+                } else {
+                    specificSources.push({
+                        title,
+                        url: url,
+                        source: sourceId
+                    }
+                    )
+                }
+                res.json(specificSources)
+            }).catch(err => console.log(err))
+        })
 })
 
 app.listen(PORT, () => console.log(`server running on PORT ${PORT}`));
